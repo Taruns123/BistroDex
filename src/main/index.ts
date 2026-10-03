@@ -12,6 +12,16 @@ import {
   writeBill,
   writeNote
 } from '@/lib'
+import {
+  getFloor,
+  getInventory,
+  getMenu,
+  getOutlet,
+  getSalesSummary,
+  listBills,
+  saveTableOrder,
+  settleTable
+} from '@/lib/pos'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import {
   CreateBill,
@@ -25,7 +35,9 @@ import {
   ReadNote,
   ReadTables,
   WriteBill,
-  WriteNote
+  WriteNote,
+  SaveTableOrder,
+  SettleTable
 } from '@shared/types'
 import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
@@ -34,13 +46,15 @@ import icon from '../../resources/icon.png?asset'
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 670,
+    width: 1440,
+    height: 900,
+    minWidth: 1180,
+    minHeight: 760,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     center: true,
-    title: 'Note Mark',
+    title: 'BistroDex',
     frame: false,
     vibrancy: 'under-window',
     visualEffectState: 'active',
@@ -105,6 +119,18 @@ app.whenReady().then(() => {
   ipcMain.handle('writeBill', (_, ...args: Parameters<WriteBill>) => writeBill(...args))
   ipcMain.handle('createBill', (_, ...args: Parameters<CreateBill>) => createBill(...args))
   ipcMain.handle('deleteBill', (_, ...args: Parameters<DeleteBill>) => deleteBill(...args))
+
+  // POS channels (see src/main/lib/pos.ts)
+  ipcMain.handle('getOutlet', () => getOutlet())
+  ipcMain.handle('getMenu', () => getMenu())
+  ipcMain.handle('getFloor', () => getFloor())
+  ipcMain.handle('getInventory', () => getInventory())
+  ipcMain.handle('listBills', () => listBills())
+  ipcMain.handle('getSalesSummary', () => getSalesSummary())
+  ipcMain.handle('saveTableOrder', (_, ...args: Parameters<SaveTableOrder>) =>
+    saveTableOrder(...args)
+  )
+  ipcMain.handle('settleTable', (_, ...args: Parameters<SettleTable>) => settleTable(...args))
 
   createWindow()
 

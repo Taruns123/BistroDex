@@ -1,4 +1,6 @@
 import {
+  BistroApi,
+  ReadTables,
   CreateBill,
   CreateNote,
   DeleteBill,
@@ -15,7 +17,7 @@ import {
 declare global {
   interface Window {
     // electron: ElectronAPI
-    context: {
+    context?: BistroApi & {
       locale: string
       getNotes: GetNotes
       readNote: ReadNote
