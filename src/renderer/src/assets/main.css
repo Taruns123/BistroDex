@@ -1,42 +1,51 @@
+@import '@fontsource-variable/dm-sans';
+@import '@fontsource-variable/bricolage-grotesque';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html,
+  body,
   #root {
     @apply h-full;
   }
 
-  html,
   body {
-    @apply h-full;
-
-    @apply select-none;
-
-    /* @apply bg-transparent; */
-
-    @apply font-mono antialiased text-white;
-
-    @apply overflow-hidden;
+    @apply bg-cream font-sans text-ink antialiased overflow-hidden select-none;
+    font-feature-settings: 'ss01', 'cv11';
   }
 
-  header {
+  /* frameless Electron window: the top bar is the drag handle */
+  .drag {
     -webkit-app-region: drag;
   }
-
-  button {
+  .drag button,
+  .drag input,
+  .drag a {
     -webkit-app-region: no-drag;
   }
 
   ::-webkit-scrollbar {
-    @apply w-1;
+    @apply w-2 h-2;
   }
-
   ::-webkit-scrollbar-thumb {
-    @apply bg-emerald-950 rounded-md;
+    @apply rounded-full bg-sand-2;
   }
-
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-paper shadow-card;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3;
   }
 }

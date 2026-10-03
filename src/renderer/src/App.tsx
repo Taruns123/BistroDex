@@ -1,48 +1,61 @@
-import { BillEntry, BillSection, Content, ControlBar, RootLayout, ShortcutButton, Sidebar, TableTileList, TitleBar, UtilityBar, UtilitySection } from "@/components"
-import DraggableTopBar from "@/components/DraggableTopBar"
-import { useRef } from "react"
+import { NavRail, TopBar } from '@renderer/components/Shell'
+import { Bills } from '@renderer/screens/Bills'
+import { Dashboard } from '@renderer/screens/Dashboard'
+import { Floor } from '@renderer/screens/Floor'
+import { Inventory } from '@renderer/screens/Inventory'
+import { Register } from '@renderer/screens/Register'
+import { usePos, useRoute } from '@renderer/state/pos'
+import { Logo } from '@renderer/components/Shell'
+
+const titles = {
+  dashboard: 'Good evening, Anita',
+  register: 'New order',
+  floor: 'Floor',
+  bills: 'Bills',
+  inventory: 'Stock'
+} as const
 
 const App = () => {
+  const route = useRoute()
+  const { ready, tables, inventory, outlet } = usePos()
 
-  const contentContainerRef = useRef<HTMLDivElement>(null)
-
-  const resetScroll = () => {
-    if (contentContainerRef.current) {
-      contentContainerRef.current.scrollTo(0, 0)
-    }
+  if (!ready) {
+    return (
+      <div className="grid h-full place-items-center bg-espresso">
+        <div className="flex flex-col items-center gap-4 text-white/70">
+          <Logo />
+          <span className="text-sm">Opening the till…</span>
+        </div>
+      </div>
+    )
   }
 
+  const billing = tables.filter((t) => t.status === 'billing').length
+  const low = inventory.filter((i) => i.onHand <= i.reorderAt).length
+  const table =
+    route.screen === 'register' ? tables.find((t) => t.id === (route.tableId ?? 't4')) : undefined
 
   return (
-    <>
-      <DraggableTopBar />
-      <TitleBar className='' />
-      <RootLayout className=''>
-        <Content ref={contentContainerRef} className='border-l bg-emerald-800  '>
-          <ControlBar className='flex pl-4 justify-left items-center gap-4 mt-2' >
-            <ShortcutButton title={"New Table"} shortcut={'F2'} />
-            <ShortcutButton title={"Transfer Table"} shortcut={'F3'} />
-            <ShortcutButton title={"Receive Bill"} shortcut={'F4'} />
-            <ShortcutButton title={"Print Bill"} shortcut={'F5'} />
-            <ShortcutButton title={"Print KOT"} shortcut={'F8'} />
-          </ControlBar>
-          <BillSection className='rounded-md shadow-2xl shadow-emerald-950 drop-shadow-2xl w-[95%]'>
-            <BillEntry />
-          </BillSection>
-          <UtilityBar className=''>
-            <UtilitySection />
-          </UtilityBar>
-          {/* <FloatingNoteTitle />
-          <MarkdownEditor /> */}
-
-        </Content>
-        <Sidebar className='p-2 bg-emerald-800'>
-          <TableTileList className='' onSelect={() => { }} />
-          {/* <ActionButtonsRow className="flex justify-between mt-1" />
-          <NotePreviewList className='mt-3 space-y-1 text-black' onSelect={resetScroll} /> */}
-        </Sidebar>
-      </RootLayout>
-    </>
+    <div className="flex h-full">
+      <NavRail route={route} badges={{ floor: billing, inventory: low }} />
+      <main className="flex min-w-0 flex-1 flex-col">
+        <TopBar
+          title={
+            table
+              ? `${table.label} · ${table.order.length ? 'Running order' : 'New order'}`
+              : titles[route.screen]
+          }
+          subtitle={table ? `${outlet?.name} · ${table.area} · dine-in` : undefined}
+        />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {route.screen === 'dashboard' && <Dashboard />}
+          {route.screen === 'register' && <Register tableId={route.tableId} />}
+          {route.screen === 'floor' && <Floor />}
+          {route.screen === 'bills' && <Bills billNo={route.billNo} />}
+          {route.screen === 'inventory' && <Inventory />}
+        </div>
+      </main>
+    </div>
   )
 }
 

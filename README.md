@@ -1,34 +1,32 @@
-# note-mark
+# BistroDex
 
-An Electron application with React and TypeScript
+A desktop point-of-sale for small Indian restaurants and cafés, built with Electron, React and TypeScript.
 
-## Recommended IDE Setup
+- **Today**: net sales, orders and covers, average ticket, sales by hour, payment mix (UPI / card / cash), top sellers, tables that need attention, and ingredients running low.
+- **Order**: a touch-first register. Menu grid by category with veg / non-veg / egg marks, bestseller and sold-out states, and a running order per table with qty steppers. New items are kept apart from items already sent to the kitchen (KOT). Totals include discount, CGST 2.5% + SGST 2.5%, and round-off.
+- **Settle**: UPI QR, card (EDC) or cash with change due. The table closes and a GST tax invoice is generated.
+- **Floor**: live table map by area (Indoor, Terrace, Takeaway) with status, covers, time seated and running amount, plus a steward-wise view.
+- **Bills**: the day's invoices, filterable by payment mode, with a thermal-style receipt preview.
+- **Stock**: ingredient levels against par and reorder points, with critical and low flags, suppliers, and one-tap reorder quantities.
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## Project Setup
-
-### Install
+## Running it
 
 ```bash
-$ yarn
+yarn            # install
+yarn dev        # Electron app (data in ~/BistroDex/bistrodex.json via IPC)
+yarn dev:web    # renderer only, in the browser, on built-in demo data -> http://localhost:5303
 ```
 
-### Development
+### Demo mode
+
+The renderer talks to one interface, `BistroApi` (`src/shared/types.ts`). `src/renderer/src/api/index.ts` picks the implementation:
+
+- **Electron**: `window.context`, exposed by the preload script. Each call is an IPC channel handled in `src/main/lib/pos.ts`.
+- **Demo**: `src/renderer/src/api/demo.ts`, an in-memory dataset for a Mumbai café on a busy weeknight. The clock is pinned to 8:45 PM. Demo mode is used when `VITE_DEMO=1` or when no Electron bridge is present. Orders and settlements work but are not persisted.
+
+## Build
 
 ```bash
-$ yarn dev
-```
-
-### Build
-
-```bash
-# For windows
-$ yarn build:win
-
-# For macOS
-$ yarn build:mac
-
-# For Linux
-$ yarn build:linux
+yarn build:mac | build:win | build:linux   # desktop installers
+yarn build:web                             # static demo build in out/web
 ```
