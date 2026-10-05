@@ -1,4 +1,14 @@
 import { BillContent, BillInfo, NoteContent, NoteInfo, TableInfo } from './models'
+import type {
+  Bill,
+  DiningTable,
+  InventoryItem,
+  Menu,
+  OrderLine,
+  Outlet,
+  PaymentMode,
+  SalesSummary
+} from './models'
 
 export type GetNotes = () => Promise<NoteInfo[]>
 
@@ -30,3 +40,30 @@ export type CreateBill = (
 export type DeleteBill = (bill_no: BillInfo['bill_no']) => Promise<boolean>
 
 ////////////////////
+
+/* POS channels */
+
+export type GetOutlet = () => Promise<Outlet>
+export type GetMenu = () => Promise<Menu>
+export type GetFloor = () => Promise<DiningTable[]>
+export type SaveTableOrder = (tableId: string, lines: OrderLine[]) => Promise<DiningTable>
+export type SettleTable = (
+  tableId: string,
+  paymentMode: PaymentMode,
+  discountPct: number
+) => Promise<Bill>
+export type GetInventory = () => Promise<InventoryItem[]>
+export type ListBills = () => Promise<Bill[]>
+export type GetSalesSummary = () => Promise<SalesSummary>
+
+/** Everything the renderer needs from the outside world. */
+export type BistroApi = {
+  getOutlet: GetOutlet
+  getMenu: GetMenu
+  getFloor: GetFloor
+  saveTableOrder: SaveTableOrder
+  settleTable: SettleTable
+  getInventory: GetInventory
+  listBills: ListBills
+  getSalesSummary: GetSalesSummary
+}

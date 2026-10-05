@@ -263,7 +263,6 @@ export const createBill: CreateBill = async (table_no, bill_content) => {
 
   const oldData = JSON.parse(oldBillsData)
 
-  const newBill = bill_content
 
   const tableIndex = oldData.tables.findIndex((table) => table.tableNumber === table_no)
 

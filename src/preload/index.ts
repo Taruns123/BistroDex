@@ -10,7 +10,9 @@ import {
   ReadNote,
   ReadTables,
   WriteBill,
-  WriteNote
+  WriteNote,
+  SaveTableOrder,
+  SettleTable
 } from '@shared/types'
 import { contextBridge, ipcRenderer } from 'electron'
 
@@ -33,7 +35,17 @@ try {
     readBill: (...args: Parameters<ReadBill>) => ipcRenderer.invoke('readBill', ...args),
     writeBill: (...args: Parameters<WriteBill>) => ipcRenderer.invoke('writeBill', ...args),
     createBill: (...args: Parameters<CreateBill>) => ipcRenderer.invoke('createBill', ...args),
-    deleteBill: (...args: Parameters<DeleteBill>) => ipcRenderer.invoke('deleteBill', ...args)
+    deleteBill: (...args: Parameters<DeleteBill>) => ipcRenderer.invoke('deleteBill', ...args),
+    // POS
+    getOutlet: () => ipcRenderer.invoke('getOutlet'),
+    getMenu: () => ipcRenderer.invoke('getMenu'),
+    getFloor: () => ipcRenderer.invoke('getFloor'),
+    getInventory: () => ipcRenderer.invoke('getInventory'),
+    listBills: () => ipcRenderer.invoke('listBills'),
+    getSalesSummary: () => ipcRenderer.invoke('getSalesSummary'),
+    saveTableOrder: (...args: Parameters<SaveTableOrder>) =>
+      ipcRenderer.invoke('saveTableOrder', ...args),
+    settleTable: (...args: Parameters<SettleTable>) => ipcRenderer.invoke('settleTable', ...args)
   })
 } catch (error) {
   console.log(error)
